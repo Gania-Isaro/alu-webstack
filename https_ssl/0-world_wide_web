@@ -8,18 +8,19 @@ display_subdomain_info() {
     local subdomain=$2
     local info
     
-    # Get the line following 'ANSWER SECTION:' from dig output
-    info=$(dig "${subdomain}.${domain}" | grep -A1 'ANSWER SECTION:' | tail -n1)
+    # Get the DNS record info robustly using awk
+    # It looks for the ANSWER SECTION and picks the first line that doesn't start with ;
+    info=$(dig "$subdomain.$domain" | awk '/ANSWER SECTION:/ {flag=1; next} flag && /^[^;]/ {print $4, $5; exit}')
     
-    # Extract record type and destination using awk
+    # Extract record type and destination
     local record_type
-    record_type=$(echo "$info" | awk '{print $4}')
+    record_type=$(echo "$info" | awk '{print $1}')
     local destination
-    destination=$(echo "$info" | awk '{print $5}')
+    destination=$(echo "$info" | awk '{print $2}')
 
-    # Only print if we actually found a destination
+    # Output: The subdomain [SUB_DOMAIN] is a [RECORD_TYPE] record and points to [DESTINATION]
     if [ -n "$destination" ]; then
-        echo "The subdomain ${subdomain} is a ${record_type} record and points to ${destination}"
+        echo "The subdomain $subdomain is a $record_type record and points to $destination"
     fi
 }
 
@@ -28,12 +29,12 @@ DOMAIN=$1
 SUBDOMAIN=$2
 
 if [ -z "$SUBDOMAIN" ]; then
-    # No subdomain provided, display info for default ones in specific order
+    # When only domain is provided, display info for default ones in specific order
     display_subdomain_info "$DOMAIN" "www"
     display_subdomain_info "$DOMAIN" "lb-01"
     display_subdomain_info "$DOMAIN" "web-01"
     display_subdomain_info "$DOMAIN" "web-02"
 else
-    # Subdomain provided, display info for it
+    # When domain and subdomain are provided, display info for specified subdomain
     display_subdomain_info "$DOMAIN" "$SUBDOMAIN"
 fi
