@@ -12,7 +12,7 @@ global
 	ca-base /etc/ssl/certs
 	crt-base /etc/ssl/private
 
-	# Default ciphers to use on SSL-enabled listening sockets.
+	# Default ciphers
 	ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
 	ssl-default-bind-options no-sslv3
 	tune.ssl.default-dh-param 2048
@@ -32,9 +32,10 @@ frontend http_front
 
 frontend https_front
 	bind *:443 ssl crt /etc/haproxy/certs/www.holberton.online.pem
+	http-request set-header X-Forwarded-Proto https
 	default_backend http_back
 
 backend http_back
 	balance roundrobin
-	server web-01 52.70.87.10:80 check
-	server web-02 3.93.218.74:80 check
+	server 67000-web-01 52.70.87.10:80 check
+	server 67000-web-02 3.93.218.74:80 check
