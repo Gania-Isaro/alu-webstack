@@ -31,11 +31,11 @@ frontend http_front
 	default_backend http_back
 
 frontend https_front
-	bind *:443 ssl crt /etc/haproxy/certs/www.holberton.online.pem
+	bind *:443 ssl crt /etc/haproxy/certs/www.gania.tech.pem
 	http-request set-header X-Forwarded-Proto https
 	default_backend http_back
 
 backend http_back
 	balance roundrobin
-	server 67000-web-01 52.70.87.10:80 check
-	server 67000-web-02 3.93.218.74:80 check
+	server 7011-web-01 52.70.87.10:80 check
+	server 7011-web-02 3.93.218.74:80 check
