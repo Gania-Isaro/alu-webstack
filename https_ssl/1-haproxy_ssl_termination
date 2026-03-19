@@ -36,13 +36,9 @@ defaults
 
 frontend gania_frontend
     bind *:80
-    default_backend gania_backend
 
 frontend gania_frontend_https
     bind *:443 ssl crt /etc/haproxy/certs/www.pem
     default_backend gania_backend
 
 backend gania_backend
-    balance roundrobin
-    server 7007-web-01 52.70.87.10:80 check
-    server 7007-web-02 3.93.218.74:80 check
